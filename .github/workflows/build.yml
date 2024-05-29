@@ -12,6 +12,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Set up Chocolatey
+        uses: actions/setup-chocolatey@v1
+
+      - name: Install Windows SDK
+        run: |
+         choco install windows-sdk-10-version-1903-all
+         choco install signtool
+        shell: powershell
+
+      - name: Add Windows SDK to PATH
+        run: |
+          $env:Path += ";C:\Program Files (x86)\Windows Kits\10\bin\x64"
+          Write-Output "##vso[task.setvariable variable=Path]$env:Path"
+        shell: powershell
+
+      - name: Verify SignTool Installation
+        run: |
+          signtool.exe /?
+        shell: powershell
+      
       - name: Cache pip
         uses: actions/cache@v3
         with:
@@ -29,6 +50,12 @@ jobs:
           mkdir -p ${{ github.workspace }}/bin
           python image-base64data-generator.py
           pyinstaller --clean --onefile --icon=icon.ico --windowed troppical.py
+
+      - name: Sign Your Application
+        run: |
+          signtool sign /a /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v ${{ github.workspace }}/dist/troppical.exe
+        shell: powershell
+        
       - name: Upload troppical
         uses: actions/upload-artifact@v4
         with:
