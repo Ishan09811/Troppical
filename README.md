@@ -13,7 +13,7 @@
   <br>
 </p>
 
-# What is this?
+ # What is this?
 
 Troppical is a simple app written in Python that lets you manage your emulators with an easy installation and updating process. **FOR NOW IN BETA**
 
