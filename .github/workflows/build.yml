@@ -13,13 +13,13 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Set up Chocolatey
-        uses: actions/setup-chocolatey@v1
-
       - name: Install Windows SDK
         run: |
-         choco install windows-sdk-10-version-1903-all
-         choco install signtool
+         # Download the Windows SDK installer
+         Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/p/?linkid=2120843" -OutFile "$env:TEMP\sdksetup.exe"
+
+         # Install the Windows SDK silently
+         Start-Process -FilePath "$env:TEMP\sdksetup.exe" -ArgumentList '/quiet /norestart' -Wait
         shell: powershell
 
       - name: Add Windows SDK to PATH
