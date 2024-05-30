@@ -24,8 +24,8 @@ jobs:
 
       - name: Add Windows SDK to PATH
         run: |
-          $env:Path += ";C:\Program Files (x86)\Windows Kits\10\bin\x64"
-          Write-Output "##vso[task.setvariable variable=Path]$env:Path"
+          echo "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64" | Out-File -Append -FilePath $env:GITHUB_PATH
+          Get-Content $env:GITHUB_PATH
         shell: powershell
 
       - name: Verify SignTool Installation
@@ -42,6 +42,7 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+            
       - name: Install dependencies
         run: pip install pyqt6 pyinstaller pywin32 requests
       - name: Build
