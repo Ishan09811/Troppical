@@ -30,13 +30,12 @@ jobs:
             ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
 
       - name: Install dependencies
-        run: pip install pyqt6 pyinstaller pywin32 requests
+        run: pip install pyqt6 nuitka pywin32 requests
 
       - name: Build
         shell: bash
         run: |
-          pyinstaller --clean --onefile --icon=icon.ico --add-data "icon.ico;." --windowed main.py
-          pyinstaller --clean --onefile --icon=icon.ico --windowed init_troppical.py
+          nuitka --standalone --onefile --windows-icon-from-ico=icon.ico main.py
         env:
           GITHUB_TOKEN: ${{ secrets.BUILD }} 
           
