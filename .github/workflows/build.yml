@@ -35,7 +35,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          nuitka --standalone --onefile --windows-icon-from-ico=icon.ico main.py
+          python -m nuitka --standalone --onefile --windows-icon-from-ico=icon.ico main.py
         env:
           GITHUB_TOKEN: ${{ secrets.BUILD }} 
           
