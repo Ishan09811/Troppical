@@ -32,6 +32,13 @@ jobs:
       - name: Install dependencies
         run: pip install pyqt6 nuitka pywin32 requests
 
+      - name: Install Dependency Walker
+        run: |
+          mkdir -p C:\Users\RUNNER~1\AppData\Local\Nuitka\Nuitka\Cache\DOWNLOADS\depends\x86_64
+          curl -L -o C:\Users\RUNNER~1\AppData\Local\Nuitka\Nuitka\Cache\DOWNLOADS\depends\x86_64\depends.zip http://dependencywalker.com/depends22_x64.zip
+          tar -xf C:\Users\RUNNER~1\AppData\Local\Nuitka\Nuitka\Cache\DOWNLOADS\depends\x86_64\depends.zip -C C:\Users\RUNNER~1\AppData\Local\Nuitka\Nuitka\Cache\DOWNLOADS\depends\x86_64
+          mv C:\Users\RUNNER~1\AppData\Local\Nuitka\Nuitka\Cache\DOWNLOADS\depends\x86_64\depends22_x64.exe C:\Users\RUNNER~1\AppData\Local\Nuitka\Nuitka\Cache\DOWNLOADS\depends\x86_64\depends.exe
+
       - name: Build
         shell: bash
         run: |
