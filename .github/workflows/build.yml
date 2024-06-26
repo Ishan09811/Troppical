@@ -40,6 +40,7 @@ jobs:
           onefile: true
           standalone: true
           enable-plugins: pyqt6
+          follow-imports: true
         env:
           GITHUB_TOKEN: ${{ secrets.BUILD }} 
           
