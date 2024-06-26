@@ -39,7 +39,8 @@ jobs:
           script-name: main.py
           onefile: true
           standalone: true
-          enable-plugins: pyqt6, pywin32
+          include-qt-plugins: true
+          mingw64: true
         env:
           GITHUB_TOKEN: ${{ secrets.BUILD }} 
           
