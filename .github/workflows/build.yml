@@ -19,19 +19,6 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~\AppData\Local\pip\Cache
-            ~\AppData\Local\pyinstaller\Cache
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-
-      - name: Install dependencies
-        run: pip install pyqt6 nuitka pywin32 requests
-
       - name: Build
         uses: Nuitka/Nuitka-Action@main
         with:
@@ -39,8 +26,7 @@ jobs:
           script-name: main.py
           onefile: true
           standalone: true
-          include-qt-plugins: true
-          mingw64: true
+          enable-plugins: pyqt6
         env:
           GITHUB_TOKEN: ${{ secrets.BUILD }} 
           
