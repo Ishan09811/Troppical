@@ -39,6 +39,7 @@ jobs:
           script-name: main.py
           onefile: true
           standalone: true
+          enable-plugins: qt-plugins
         env:
           GITHUB_TOKEN: ${{ secrets.BUILD }} 
           
