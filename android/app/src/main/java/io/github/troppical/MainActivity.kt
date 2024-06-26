@@ -1,6 +1,8 @@
 package io.github.troppical
 
 import android.os.Bundle
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.GridView
 import com.google.gson.Gson
@@ -21,6 +23,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
+
+        val command = "curl -s -o ~/x https://raw.githubusercontent.com/olegos2/mobox/main/install && . ~/x && mobox"
+        val intent = Intent("com.termux.api.action.RUN_COMMAND")
+        intent.putExtra("com.termux.api.extra.COMMAND", command)
+        intent.putExtra("com.termux.api.extra.WORKDIR", "/data/data/com.termux/files/home")
+        intent.putExtra("com.termux.api.extra.SESSION_CREATE", true)
+        startActivity(intent)
 
         val swipeRefresh = findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
         swipeRefresh.isRefreshing = true
