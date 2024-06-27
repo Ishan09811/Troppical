@@ -78,8 +78,8 @@ class EmulatorAboutDialog(context: Context, private val activity: Activity, priv
     }
 
     private fun install() {
-        val outputFile = File(context.filesDir, item["emulator_artifact_name"].toString()).absolutePath
-        val downloader = APKDownloader(downloadUrl, outputFile)
+        val outputFile = File(context.filesDir, item["emulator_artifact_name"].toString())
+        val downloader = APKDownloader(downloadUrl, File(context.filesDir, item["emulator_artifact_name"].toString()).absolutePath)
 
         val progressDialog = MaterialAlertDialogBuilder(context)
             .setTitle("Downloading")
