@@ -5,10 +5,15 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_library(apkdownloader SHARED apk_downloader.cpp)
 
-find_package(OpenSSL REQUIRED)
+
+add_library(OpenSSL::SSL STATIC IMPORTED)
+add_library(OpenSSL::Crypto STATIC IMPORTED)
+set_target_properties(OpenSSL::SSL PROPERTIES IMPORTED_LOCATION /usr/local/opt/openssl/lib/libssl.dylib)
+set_target_properties(OpenSSL::Crypto PROPERTIES IMPORTED_LOCATION /usr/local/opt/openssl/lib/libcrypto.dylib)
+
 
 add_subdirectory(libraries/libcurl)
-include_directories(${CMAKE_SOURCE_DIR}/include ${OPENSSL_INCLUDE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/include /usr/local/opt/openssl/include)
 
 if (TARGET libcurl)
     set(CURL_LIB libcurl)
