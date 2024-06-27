@@ -78,7 +78,7 @@ class EmulatorAboutDialog(context: Context, private val activity: Activity, priv
     }
 
     private fun install() {
-        val outputFile = File(context.filesDir, item["emulator_artifact_name"].toString())
+        val outputFile = File(context.filesDir, item["emulator_artifact_name"].toString()).absolutePath
         val downloader = APKDownloader(downloadUrl, outputFile)
 
         val progressDialog = MaterialAlertDialogBuilder(context)
@@ -93,18 +93,21 @@ class EmulatorAboutDialog(context: Context, private val activity: Activity, priv
         progressIndicator = progressDialog.findViewById(R.id.progress_indicator)!!
 
         downloader.download(
-            onProgress = { progress ->
-                activity.runOnUiThread {
-                    progressIndicator.progress = progress
+            object : APKDownloader.ProgressCallback {
+                override fun onProgress(progress: Int) {
+                    activity.runOnUiThread {
+                        progressIndicator.progress = progress
+                    }
                 }
             },
-            onComplete = { success ->
-                activity.runOnUiThread {
-                    progressDialog.dismiss()
-                    if (success) {
-                        if (outputFile.extension.equals("apk", ignoreCase = true)) {
-                            val installer = APKInstaller(context)
-                            installer.install(outputFile,
+            object : APKDownloader.OnCompleteCallback {
+                override fun onComplete(success: Boolean) {
+                    activity.runOnUiThread {
+                        progressDialog.dismiss()
+                        if (success) {
+                            if (outputFile.extension.equals("apk", ignoreCase = true)) {
+                                val installer = APKInstaller(context)
+                                installer.install(outputFile,
                                 onComplete = {
                                     Log.i("EmulatorAboutDialog", "Installation succeeded")
                                     fetchGitHubRelease()
@@ -186,8 +189,9 @@ class EmulatorAboutDialog(context: Context, private val activity: Activity, priv
                     }
                 }
             }
-        )
-    }
+         }    
+      )
+   }
 
     private fun uninstallApp(packageName: String, onComplete: () -> Unit, onFailure: (Exception) -> Unit) {
         try {
