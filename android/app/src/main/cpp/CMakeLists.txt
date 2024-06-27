@@ -7,7 +7,7 @@ add_library(apkdownloader SHARED apk_downloader.cpp)
 
 add_subdirectory(libraries/libcurl)
 include_directories(${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(apkdownloader curl)
+target_link_libraries(apkdownloader curl ssl crypto)
 
 find_library(log-lib log)
 target_link_libraries(apkdownloader ${log-lib})
