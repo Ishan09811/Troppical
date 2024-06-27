@@ -9,7 +9,7 @@ find_package(OpenSSL REQUIRED)
 
 add_subdirectory(libraries/libcurl)
 include_directories(${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(troppical apkdownloader ssl crypto curl)
+target_link_libraries(apkdownloader ssl crypto curl)
 
 find_library(log-lib log)
-target_link_libraries(troppical apkdownloader ${log-lib})
+target_link_libraries(apkdownloader ${log-lib})
