@@ -17,7 +17,7 @@ else()
     set(CURL_LIB ${CURL_LIBRARIES})
 endif()
 
-target_link_libraries(apkdownloader ssl crypto ${CURL_LIB})
+target_link_libraries(apkdownloader ${CURL_LIB})
 
 find_library(log-lib log)
 target_link_libraries(apkdownloader ${log-lib})
