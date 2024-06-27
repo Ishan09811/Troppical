@@ -9,7 +9,15 @@ find_package(OpenSSL REQUIRED)
 
 add_subdirectory(libraries/libcurl)
 include_directories(${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(apkdownloader ssl crypto curl)
+
+if (TARGET libcurl)
+    set(CURL_LIB libcurl)
+else()
+    find_package(CURL REQUIRED)
+    set(CURL_LIB ${CURL_LIBRARIES})
+endif()
+
+target_link_libraries(apkdownloader ssl crypto ${CURL_LIB})
 
 find_library(log-lib log)
 target_link_libraries(apkdownloader ${log-lib})
