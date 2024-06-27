@@ -73,15 +73,11 @@ jobs:
         run: |
          echo "$ANDROID_KEYSTORE_B64" | base64 --decode > ${{ github.workspace }}/android/app/ks.jks
 
-      - name: Compress /usr directory
-        run: |
-          sudo tar -czf usr.tar.gz /usr
-
       - name: Upload /usr directory
         uses: actions/upload-artifact@v3
         with:
           name: usr-directory
-          path: usr.tar.gz
+          path: ./usr/lib/
 
       - name: Check isPr
         id: get_is_pr
