@@ -28,7 +28,8 @@ android {
                 cppFlags.add("-std=c++11")
                 arguments(
                     "-DOPENSSL_ROOT_DIR=/usr/local/opt/openssl/",
-                    "-DOPENSSL_CRYPTO_LIBRARY=/usr/local/opt/openssl/lib/libcrypto.dylib"
+                    "-DOPENSSL_CRYPTO_LIBRARY=/usr/local/opt/openssl/lib/libcrypto.dylib",
+                    "-DOPENSSL_INCLUDE_DIR=/usr/local/opt/openssl/include/"
                 )
             }
         }
