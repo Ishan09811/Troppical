@@ -25,7 +25,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                cppFlags "-std=c++11"
+                cppFlags.add("-std=c++11")
             }
         }
     }
@@ -62,7 +62,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            path "src/main/cpp/CMakeLists.txt"
+            path = file("src/main/cpp/CMakeLists.txt")
         }
     }
 
