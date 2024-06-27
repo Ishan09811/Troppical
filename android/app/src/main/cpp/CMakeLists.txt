@@ -8,7 +8,7 @@ add_library(apkdownloader SHARED apk_downloader.cpp)
 find_package(OpenSSL REQUIRED)
 
 add_subdirectory(libraries/libcurl)
-include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/include ${OPENSSL_INCLUDE_DIR})
 
 if (TARGET libcurl)
     set(CURL_LIB libcurl)
