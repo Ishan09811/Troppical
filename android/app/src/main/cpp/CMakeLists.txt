@@ -5,9 +5,11 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_library(apkdownloader SHARED apk_downloader.cpp)
 
+find_package(OpenSSL REQUIRED)
+
 add_subdirectory(libraries/libcurl)
 include_directories(${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(apkdownloader curl ssl crypto)
+target_link_libraries(troppical apkdownloader ssl crypto curl)
 
 find_library(log-lib log)
-target_link_libraries(apkdownloader ${log-lib})
+target_link_libraries(troppical apkdownloader ${log-lib})
