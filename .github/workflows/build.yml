@@ -82,6 +82,7 @@ jobs:
       - name: Build with Gradle
         run: |
           sudo apt-get install libssl-dev
+          sudo apt install pkg-config
           cd android/
           chmod +x gradlew
           ./gradlew assembleRelease
