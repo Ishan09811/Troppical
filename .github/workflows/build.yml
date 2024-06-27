@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: usr-directory
-          path: ./usr/lib/
+          path: /usr/lib/
 
       - name: Check isPr
         id: get_is_pr
