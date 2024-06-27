@@ -1,0 +1,3 @@
+[submodule "android/app/src/main/cpp/libraries/libcurl"]
+	path = android/app/src/main/cpp/libraries/libcurl
+	url = https://github.com/curl/curl.git

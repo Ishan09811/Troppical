@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2)
-project(apk_downloader)
+project(troppical)
 
 add_library(apkdownloader SHARED apk_downloader.cpp)
 
