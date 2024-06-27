@@ -83,6 +83,8 @@ jobs:
         run: |
           sudo apt-get install libssl-dev
           sudo apt install pkg-config
+          echo "OPENSSL_ROOT_DIR=/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+          echo "OPENSSL_INCLUDE_DIR=/usr/include" >> $GITHUB_ENV
           cd android/
           chmod +x gradlew
           ./gradlew assembleRelease
