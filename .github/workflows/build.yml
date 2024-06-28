@@ -92,7 +92,7 @@ jobs:
           cd ..
           cd android/app/src/main/cpp/libraries/libcurl/
           ./buildconf
-          ./configure --with-openssl
+          ./configure --with-openssl --without-brotli
           cd ../../../../../../..
           cd android/ 
           chmod +x gradlew
