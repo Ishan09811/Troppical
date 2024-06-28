@@ -85,7 +85,7 @@ jobs:
           sudo apt install m4 libtool automake autoconf libbrotli-dev
           cd android/app/src/main/cpp/libraries/libcurl/
           ./buildconf
-          ./configure --with-openssl --with-brotli
+          CPPFLAGS="-I/usr/include/brotli" ./configure --with-openssl --with-brotli
           cd ../../../../../../..
           cd android/ 
           chmod +x gradlew
