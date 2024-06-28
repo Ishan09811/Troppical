@@ -82,10 +82,15 @@ jobs:
       - name: Build with Gradle
         run: |
           sudo apt update
-          sudo apt install m4 libtool automake autoconf libbrotli-dev
+          sudo apt install m4 libtool automake autoconf
+          git clone https://github.com/Microsoft/vcpkg.git
+          cd vcpkg
+          ./bootstrap-vcpkg.sh
+          ./vcpkg integrate install
+          ./vcpkg install brotli
           cd android/app/src/main/cpp/libraries/libcurl/
           ./buildconf
-          CPPFLAGS="-I/usr/include/brotli" ./configure --with-openssl --with-brotli
+          ./configure --with-openssl
           cd ../../../../../../..
           cd android/ 
           chmod +x gradlew
