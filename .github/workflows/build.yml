@@ -81,12 +81,6 @@ jobs:
       
       - name: Build with Gradle
         run: |
-          git clone https://github.com/openssl/openssl
-          cd openssl/
-          git submodule update --init --recursive
-          ./Configure
-          make
-          make test
           cd android/
           chmod +x gradlew
           ./gradlew assembleRelease
