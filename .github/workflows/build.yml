@@ -81,6 +81,7 @@ jobs:
       
       - name: Build with Gradle
         run: |
+          which openssl
           cd android/
           chmod +x gradlew
           ./gradlew assembleRelease
