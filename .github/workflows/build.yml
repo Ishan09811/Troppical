@@ -81,7 +81,9 @@ jobs:
       
       - name: Build with Gradle
         run: |
-          ldconfig -p | grep ssl
+          cd android/app/src/main/cpp/libraries/libcurl/
+          ./configure
+          cd ../..
           cd android/
           chmod +x gradlew
           ./gradlew assembleRelease
