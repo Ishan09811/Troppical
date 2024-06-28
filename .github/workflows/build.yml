@@ -82,7 +82,7 @@ jobs:
       - name: Build with Gradle
         run: |
           sudo apt update
-          sudo apt install m4 libtool automake autoconf
+          sudo apt install m4 libtool automake autoconf libbrotli-dev
           cd android/app/src/main/cpp/libraries/libcurl/
           ./buildconf
           ./configure --with-openssl
