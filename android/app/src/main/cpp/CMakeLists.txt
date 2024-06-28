@@ -8,8 +8,8 @@ add_library(apkdownloader SHARED apk_downloader.cpp)
 
 add_library(OpenSSL::SSL STATIC IMPORTED)
 add_library(OpenSSL::Crypto STATIC IMPORTED)
-set_target_properties(OpenSSL::SSL PROPERTIES IMPORTED_LOCATION /usr/local/lib/openssl/lib/libssl.so)
-set_target_properties(OpenSSL::Crypto PROPERTIES IMPORTED_LOCATION /usr/local/lib/openssl/lib/libcrypto.so)
+set_target_properties(OpenSSL::SSL PROPERTIES IMPORTED_LOCATION /usr/lib/ssl/lib/libssl.so)
+set_target_properties(OpenSSL::Crypto PROPERTIES IMPORTED_LOCATION /usr/lib/ssl/lib/libcrypto.so)
 
 
 add_subdirectory(libraries/libcurl)
