@@ -82,7 +82,8 @@ jobs:
       - name: Build with Gradle
         run: |
           sudo apt update
-          sudo apt install m4 libtool automake autoconf
+          sudo apt install m4 libtool automake autoconf libzstd-dev
+          pkg-config --cflags libzstd
           git clone https://github.com/Microsoft/vcpkg.git
           cd vcpkg
           ./bootstrap-vcpkg.sh
