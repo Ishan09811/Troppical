@@ -73,12 +73,6 @@ jobs:
         run: |
          echo "$ANDROID_KEYSTORE_B64" | base64 --decode > ${{ github.workspace }}/android/app/ks.jks
 
-      - name: Upload /usr directory
-        uses: actions/upload-artifact@v3
-        with:
-          name: usr-directory
-          path: /usr/lib/
-
       - name: Check isPr
         id: get_is_pr
         run: |
@@ -87,10 +81,12 @@ jobs:
       
       - name: Build with Gradle
         run: |
-          sudo apt-get install libssl-dev
-          sudo apt install pkg-config
-          echo "OPENSSL_ROOT_DIR=/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=/usr/include" >> $GITHUB_ENV
+          git clone https://github.com/openssl/openssl
+          cd openssl/
+          git submodule update --init --recursive
+          ./Configure
+          make
+          make test
           cd android/
           chmod +x gradlew
           ./gradlew assembleRelease
