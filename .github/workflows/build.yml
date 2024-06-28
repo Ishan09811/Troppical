@@ -84,9 +84,8 @@ jobs:
           sudo apt update
           sudo apt install m4 libtool automake autoconf
           cd android/app/src/main/cpp/libraries/libcurl/
-          autoreconf -i
           ./buildconf
-          ./configure
+          ./configure --with-openssl
           cd ../..
           cd android/
           chmod +x gradlew
