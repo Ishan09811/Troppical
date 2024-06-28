@@ -82,8 +82,8 @@ jobs:
       - name: Build with Gradle
         run: |
           cd android/app/src/main/cpp/libraries/libcurl/
-          chmod +x ./configure
-          ./configure
+          chmod +x configure.ac
+          configure.ac
           cd ../..
           cd android/
           chmod +x gradlew
