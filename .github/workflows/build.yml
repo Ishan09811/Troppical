@@ -86,7 +86,7 @@ jobs:
           cd android/app/src/main/cpp/libraries/libcurl/
           ./buildconf
           ./configure --with-openssl
-          cd ../..
+          cd .
           cd android/
           chmod +x gradlew
           ./gradlew assembleRelease
