@@ -82,6 +82,8 @@ jobs:
       - name: Build with Gradle
         run: |
           which openssl
+          which libssl.so
+          which libcrypto.so
           cd android/
           chmod +x gradlew
           ./gradlew assembleRelease
