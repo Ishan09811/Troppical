@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_library(apkdownloader SHARED apk_downloader.cpp)
 
-include_directories(${CMAKE_SOURCE_DIR}/include /usr/include/)
+include_directories(${CMAKE_SOURCE_DIR}/include /usr/include/openssl/)
 
 target_link_libraries(apkdownloader /lib/x86_64-linux-gnu/)
 
