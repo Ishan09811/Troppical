@@ -92,6 +92,7 @@ jobs:
           export PKG_CONFIG_PATH=$(pwd)/packages/brotli_x64-linux/lib/pkgconfig
           cd ..
           cd android/app/src/main/cpp/libraries/libcurl/
+          git checkout fdf11bf318bd8d7c40d433a552a5e42e01bcc5bd
           ./buildconf
           ./configure --with-openssl --without-brotli --without-zstd
           cd ../../../../../../..
