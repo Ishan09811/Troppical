@@ -1,8 +1,14 @@
 #include <jni.h>
 #include <string>
-#include <curl/curl.h>
 #include <fstream>
 #include <iostream>
+#include <cstring>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
 extern "C" {
 
@@ -12,24 +18,70 @@ struct ProgressCallbackInfo {
     jobject onCompleteCallback;
 };
 
-size_t writeData(void* ptr, size_t size, size_t nmemb, void* stream) {
-    std::ofstream* file = static_cast<std::ofstream*>(stream);
-    file->write(static_cast<char*>(ptr), size * nmemb);
-    return size * nmemb;
+int createSocket(const std::string& host, int port) {
+    struct hostent* server = gethostbyname(host.c_str());
+    if (server == nullptr) {
+        std::cerr << "No such host: " << host << std::endl;
+        return -1;
+    }
+
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) {
+        std::cerr << "Failed to create socket" << std::endl;
+        return -1;
+    }
+
+    struct sockaddr_in serv_addr;
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(port);
+    memcpy(&serv_addr.sin_addr.s_addr, server->h_addr, server->h_length);
+
+    if (connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+        std::cerr << "Failed to connect to server" << std::endl;
+        close(sockfd);
+        return -1;
+    }
+
+    return sockfd;
 }
 
-int progressCallback(void* ptr, double totalToDownload, double nowDownloaded, double, double) {
-    ProgressCallbackInfo* callbackInfo = static_cast<ProgressCallbackInfo*>(ptr);
-    JNIEnv* env = callbackInfo->env;
-    jobject progressCallback = callbackInfo->progressCallback;
-    jclass callbackClass = env->GetObjectClass(progressCallback);
-    jmethodID onProgressMethod = env->GetMethodID(callbackClass, "onProgress", "(I)V");
-
-    if (totalToDownload > 0 && onProgressMethod) {
-        int progress = static_cast<int>((nowDownloaded / totalToDownload) * 100);
-        env->CallVoidMethod(progressCallback, onProgressMethod, progress);
+SSL_CTX* createSSLContext() {
+    SSL_load_error_strings();
+    OpenSSL_add_ssl_algorithms();
+    const SSL_METHOD* method = SSLv23_client_method();
+    SSL_CTX* ctx = SSL_CTX_new(method);
+    if (!ctx) {
+        std::cerr << "Unable to create SSL context" << std::endl;
+        ERR_print_errors_fp(stderr);
     }
-    return 0;
+    return ctx;
+}
+
+void cleanupSSL(SSL_CTX* ctx) {
+    SSL_CTX_free(ctx);
+    EVP_cleanup();
+}
+
+void downloadFile(SSL* ssl, const std::string& path, std::ofstream& file, ProgressCallbackInfo* callbackInfo) {
+    char buffer[4096];
+    int bytesRead;
+    double totalBytesRead = 0;
+
+    while ((bytesRead = SSL_read(ssl, buffer, sizeof(buffer))) > 0) {
+        file.write(buffer, bytesRead);
+        totalBytesRead += bytesRead;
+
+        JNIEnv* env = callbackInfo->env;
+        jobject progressCallback = callbackInfo->progressCallback;
+        jclass callbackClass = env->GetObjectClass(progressCallback);
+        jmethodID onProgressMethod = env->GetMethodID(callbackClass, "onProgress", "(I)V");
+
+        if (onProgressMethod) {
+            int progress = static_cast<int>((totalBytesRead / 1000000) * 100);  // Simplified progress calculation
+            env->CallVoidMethod(progressCallback, onProgressMethod, progress);
+        }
+    }
 }
 
 JNIEXPORT jboolean JNICALL
@@ -37,41 +89,88 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject, js
     const char* cUrl = env->GetStringUTFChars(url, nullptr);
     const char* cOutputFile = env->GetStringUTFChars(outputFile, nullptr);
 
-    CURL* curl;
-    CURLcode res;
-    std::ofstream file;
-    ProgressCallbackInfo callbackInfo{env, progressCallback, onCompleteCallback};
+    std::string urlStr(cUrl);
+    std::string protocol, host, path;
+    int port = 80;
 
-    curl = curl_easy_init();
-    if (curl) {
-        file.open(cOutputFile, std::ios::binary);
+    size_t pos = urlStr.find("://");
+    if (pos != std::string::npos) {
+        protocol = urlStr.substr(0, pos);
+        urlStr = urlStr.substr(pos + 3);
+    }
 
-        curl_easy_setopt(curl, CURLOPT_URL, cUrl);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeData);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
-        curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progressCallback);
-        curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, &callbackInfo);
+    pos = urlStr.find('/');
+    if (pos != std::string::npos) {
+        host = urlStr.substr(0, pos);
+        path = urlStr.substr(pos);
+    } else {
+        host = urlStr;
+        path = "/";
+    }
 
-        res = curl_easy_perform(curl);
+    pos = host.find(':');
+    if (pos != std::string::npos) {
+        port = std::stoi(host.substr(pos + 1));
+        host = host.substr(0, pos);
+    }
 
-        file.close();
-        curl_easy_cleanup(curl);
-        
+    int sockfd = createSocket(host, port);
+    if (sockfd < 0) {
         env->ReleaseStringUTFChars(url, cUrl);
         env->ReleaseStringUTFChars(outputFile, cOutputFile);
-        
-        // Call onComplete callback
-        jclass callbackClass = env->GetObjectClass(onCompleteCallback);
-        jmethodID onCompleteMethod = env->GetMethodID(callbackClass, "onComplete", "(Z)V");
-        env->CallVoidMethod(onCompleteCallback, onCompleteMethod, res == CURLE_OK ? JNI_TRUE : JNI_FALSE);
-        
-        return res == CURLE_OK ? JNI_TRUE : JNI_FALSE;
+        return JNI_FALSE;
     }
+
+    SSL_CTX* ctx = createSSLContext();
+    if (!ctx) {
+        close(sockfd);
+        env->ReleaseStringUTFChars(url, cUrl);
+        env->ReleaseStringUTFChars(outputFile, cOutputFile);
+        return JNI_FALSE;
+    }
+
+    SSL* ssl = SSL_new(ctx);
+    SSL_set_fd(ssl, sockfd);
+    if (SSL_connect(ssl) <= 0) {
+        ERR_print_errors_fp(stderr);
+        SSL_free(ssl);
+        cleanupSSL(ctx);
+        close(sockfd);
+        env->ReleaseStringUTFChars(url, cUrl);
+        env->ReleaseStringUTFChars(outputFile, cOutputFile);
+        return JNI_FALSE;
+    }
+
+    std::ofstream file(cOutputFile, std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << cOutputFile << std::endl;
+        SSL_free(ssl);
+        cleanupSSL(ctx);
+        close(sockfd);
+        env->ReleaseStringUTFChars(url, cUrl);
+        env->ReleaseStringUTFChars(outputFile, cOutputFile);
+        return JNI_FALSE;
+    }
+
+    std::string request = "GET " + path + " HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
+    SSL_write(ssl, request.c_str(), request.size());
+
+    ProgressCallbackInfo callbackInfo{env, progressCallback, onCompleteCallback};
+    downloadFile(ssl, path, file, &callbackInfo);
+
+    SSL_free(ssl);
+    cleanupSSL(ctx);
+    close(sockfd);
+    file.close();
 
     env->ReleaseStringUTFChars(url, cUrl);
     env->ReleaseStringUTFChars(outputFile, cOutputFile);
-    return JNI_FALSE;
+
+    jclass callbackClass = env->GetObjectClass(onCompleteCallback);
+    jmethodID onCompleteMethod = env->GetMethodID(callbackClass, "onComplete", "(Z)V");
+    env->CallVoidMethod(onCompleteCallback, onCompleteMethod, JNI_TRUE);
+
+    return JNI_TRUE;
 }
 
 }
