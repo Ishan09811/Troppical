@@ -32,7 +32,7 @@ android {
                     "-DOPENSSL_INCLUDE_DIR=/usr/include/x86_64-linux-gnu/openssl/",
                     "-DOPENSSL_SSL_LIBRARY=/lib/x86_64-linux-gnu/libssl.so",
                     "-DZstd_INCLUDE_DIRS=/usr/include/",
-                    "-DUSE_OPENSSL=true"
+                    "-DCURL_USE_OPENSSL=true"
                 )
             }
         }
