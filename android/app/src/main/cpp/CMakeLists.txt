@@ -5,9 +5,15 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_library(apkdownloader SHARED apk_downloader.cpp)
 
+# Include directories for OpenSSL
 include_directories(${CMAKE_SOURCE_DIR}/include /usr/include/openssl/)
 
-target_link_libraries(apkdownloader /lib/x86_64-linux-gnu/)
+# Find the OpenSSL package
+find_package(OpenSSL REQUIRED)
 
+# Link against OpenSSL libraries
+target_link_libraries(apkdownloader OpenSSL::SSL OpenSSL::Crypto)
+
+# Link against Android log library
 find_library(log-lib log)
 target_link_libraries(apkdownloader ${log-lib})
