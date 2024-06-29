@@ -11,9 +11,8 @@ add_library(OpenSSL::Crypto STATIC IMPORTED)
 set_target_properties(OpenSSL::SSL PROPERTIES IMPORTED_LOCATION /lib/x86_64-linux-gnu/libssl.so)
 set_target_properties(OpenSSL::Crypto PROPERTIES IMPORTED_LOCATION /lib/x86_64-linux-gnu/libcrypto.so)
 
-
 add_subdirectory(libraries/libcurl)
-include_directories(${CMAKE_SOURCE_DIR}/include /usr/local/opt/openssl/include)
+include_directories(${CMAKE_SOURCE_DIR}/include /usr/include/)
 
 if (TARGET libcurl)
     set(CURL_LIB libcurl)
