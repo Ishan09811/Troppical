@@ -83,7 +83,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install m4 libtool automake autoconf libzstd-dev
-          pkg-config --cflags libzstd
+          dpkg -L libzstd-dev | grep include
           git clone https://github.com/Microsoft/vcpkg.git
           cd vcpkg
           ./bootstrap-vcpkg.sh
