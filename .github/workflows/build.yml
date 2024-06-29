@@ -84,18 +84,6 @@ jobs:
           sudo apt update
           sudo apt install m4 libtool automake autoconf libzstd-dev
           dpkg -L libssl-dev | grep include
-          git clone https://github.com/Microsoft/vcpkg.git
-          cd vcpkg
-          ./bootstrap-vcpkg.sh
-          ./vcpkg integrate install
-          ./vcpkg install brotli
-          export PKG_CONFIG_PATH=$(pwd)/packages/brotli_x64-linux/lib/pkgconfig
-          cd ..
-          cd android/app/src/main/cpp/libraries/libcurl/
-          git checkout 579a2e6e285f4939a48cadd21ff40e35c0a5608f
-          ./buildconf
-          ./configure --with-openssl --without-brotli --without-zstd
-          cd ../../../../../../..
           cd android/ 
           chmod +x gradlew
           ./gradlew assembleRelease
