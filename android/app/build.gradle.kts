@@ -28,6 +28,10 @@ android {
                 cppFlags.add("-std=c++11")
                 arguments(
                     "-DANDROID_STL=c++_shared"
+                    "-DOPENSSL_ROOT_DIR=/usr/local/opt/openssl/",
+                    "-DOPENSSL_CRYPTO_LIBRARY=/lib/x86_64-linux-gnu/libcrypto.so",
+                    "-DOPENSSL_INCLUDE_DIR=/usr/include/x86_64-linux-gnu/openssl/",
+                    "-DOPENSSL_SSL_LIBRARY=/lib/x86_64-linux-gnu/libssl.so"
                 )
             }
         }
