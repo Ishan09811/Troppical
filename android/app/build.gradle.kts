@@ -35,7 +35,7 @@ android {
                     "-DANDROID_NDK=/usr/local/lib/android/sdk/ndk/26.1.10909125",
                     "-DCMAKE_TOOLCHAIN_FILE=/usr/local/lib/android/sdk/ndk/26.1.10909125/build/cmake/android.toolchain.cmake",
                     "-DANDROID_NATIVE_API_LEVEL=26",
-                    "-DANDROID_ABI=aarch64"
+                    "-DANDROID_ABI=arm64-v8a"
                 )
             }
         }
