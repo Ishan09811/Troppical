@@ -30,7 +30,8 @@ android {
                     "-DANDROID_STL=c++_shared",
                     "-DSYSTEM_OPENSSL=OFF",
                     "-DBUILD_OPENSSL=ON",
-                    "-DOPENSSL_BUILD_VERSION=3.1.5"
+                    "-DOPENSSL_BUILD_VERSION=3.1.5",
+                    "-DCROSS_ANDROID=ON"
                 )
             }
         }
