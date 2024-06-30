@@ -81,7 +81,15 @@ void downloadFile(SSL* ssl, const std::string& path, std::ofstream& file, Progre
 }
 
 JNIEXPORT jboolean JNICALL
-Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject, jstring url, jstring outputFile, jobject progressCallback, jobject onCompleteCallback) {
+Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject thiz, jobject progressCallback, jobject onCompleteCallback) {
+    // Get the URL and output file path from the APKDownloader instance
+    jclass apkDownloaderClass = env->GetObjectClass(thiz);
+    jfieldID urlFieldID = env->GetFieldID(apkDownloaderClass, "url", "Ljava/lang/String;");
+    jfieldID outputFileFieldID = env->GetFieldID(apkDownloaderClass, "outputFile", "Ljava/lang/String;");
+
+    jstring url = (jstring)env->GetObjectField(thiz, urlFieldID);
+    jstring outputFile = (jstring)env->GetObjectField(thiz, outputFileFieldID);
+
     const char* cUrl = env->GetStringUTFChars(url, nullptr);
     const char* cOutputFile = env->GetStringUTFChars(outputFile, nullptr);
 
