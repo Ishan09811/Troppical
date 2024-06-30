@@ -2,3 +2,6 @@
 	path = android/app/src/main/cpp/libraries/libcurl
 	url = https://github.com/Ishan09811/curl.git
         branch = fdf11bf318bd8d7c40d433a552a5e42e01bcc5bd
+[submodule "android/app/src/main/cpp/libraries/openssl-cmake"]
+	path = android/app/src/main/cpp/libraries/openssl-cmake
+	url = https://github.com/viaduck/openssl-cmake/
