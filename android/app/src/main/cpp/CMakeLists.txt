@@ -11,7 +11,7 @@ add_subdirectory(libraries/openssl-cmake)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Link against OpenSSL libraries
-target_link_libraries(apkdownloader OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(apkdownloader ssl crypto)
 
 # Link against Android log library
 find_library(log-lib log)
