@@ -47,9 +47,10 @@ int createSocket(const std::string& host, int port) {
 }
 
 SSL_CTX* createSSLContext() {
-    SSL_load_error_strings();
-    OpenSSL_add_ssl_algorithms();
-    const SSL_METHOD* method = SSLv23_client_method();
+    // Initialize OpenSSL
+    OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL);
+
+    const SSL_METHOD* method = TLS_client_method();
     SSL_CTX* ctx = SSL_CTX_new(method);
     if (!ctx) {
         std::cerr << "Unable to create SSL context" << std::endl;
@@ -58,9 +59,9 @@ SSL_CTX* createSSLContext() {
     return ctx;
 }
 
-void cleanupSSL(SSL_CTX* ctx) {
-    SSL_CTX_free(ctx);
+void cleanupSSL() {
     EVP_cleanup();
+    ERR_free_strings();
 }
 
 void downloadFile(SSL* ssl, const std::string& path, std::ofstream& file, ProgressCallbackInfo* callbackInfo) {
@@ -91,7 +92,7 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject, js
 
     std::string urlStr(cUrl);
     std::string protocol, host, path;
-    int port = 80;
+    int port = 443;  // Default to HTTPS
 
     size_t pos = urlStr.find("://");
     if (pos != std::string::npos) {
@@ -134,7 +135,8 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject, js
     if (SSL_connect(ssl) <= 0) {
         ERR_print_errors_fp(stderr);
         SSL_free(ssl);
-        cleanupSSL(ctx);
+        SSL_CTX_free(ctx);
+        cleanupSSL();
         close(sockfd);
         env->ReleaseStringUTFChars(url, cUrl);
         env->ReleaseStringUTFChars(outputFile, cOutputFile);
@@ -145,7 +147,8 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject, js
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << cOutputFile << std::endl;
         SSL_free(ssl);
-        cleanupSSL(ctx);
+        SSL_CTX_free(ctx);
+        cleanupSSL();
         close(sockfd);
         env->ReleaseStringUTFChars(url, cUrl);
         env->ReleaseStringUTFChars(outputFile, cOutputFile);
@@ -159,7 +162,8 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject, js
     downloadFile(ssl, path, file, &callbackInfo);
 
     SSL_free(ssl);
-    cleanupSSL(ctx);
+    SSL_CTX_free(ctx);
+    cleanupSSL();
     close(sockfd);
     file.close();
 
