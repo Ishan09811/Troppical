@@ -31,7 +31,11 @@ android {
                     "-DSYSTEM_OPENSSL=OFF",
                     "-DBUILD_OPENSSL=ON",
                     "-DOPENSSL_BUILD_VERSION=3.1.5",
-                    "-DCROSS_ANDROID=ON"
+                    "-DCROSS_ANDROID=ON",
+                    "-DANDROID_NDK_ROOT=/usr/local/lib/android/sdk/ndk/26.1.10909125",
+                    "-DANDROID_ARCH=arch-arm64",
+                    "-DANDROID_API=26",
+                    "-DANDROID_MACHINE=aarch64"
                 )
             }
         }
