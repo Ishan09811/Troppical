@@ -83,7 +83,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install m4 libtool automake autoconf libzstd-dev
-          dpkg -L libssl-dev | grep include
+          export ANDROID_NDK_ROOT=/usr/local/lib/android/sdk/ndk/26.1.10909125
+          export ANDROID_EABI=arm-linux-androideabi-4.9
+          export ANDROID_ARCH=arch-arm64
+          export ANDROID_API=26
+          export ANDROID_MACHINE=aarch64
+          export PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
           cd android/ 
           chmod +x gradlew
           ./gradlew assembleRelease
