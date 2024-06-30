@@ -29,7 +29,8 @@ android {
                 arguments(
                     "-DANDROID_STL=c++_shared",
                     "-DSYSTEM_OPENSSL=OFF",
-                    "-DBUILD_OPENSSL=ON"
+                    "-DBUILD_OPENSSL=ON",
+                    "-DOPENSSL_BUILD_VERSION=3.1.5"
                 )
             }
         }
