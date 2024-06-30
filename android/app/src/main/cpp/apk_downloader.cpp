@@ -59,11 +59,6 @@ SSL_CTX* createSSLContext() {
     return ctx;
 }
 
-void cleanupSSL() {
-    EVP_cleanup();
-    ERR_free_strings();
-}
-
 void downloadFile(SSL* ssl, const std::string& path, std::ofstream& file, ProgressCallbackInfo* callbackInfo) {
     char buffer[4096];
     int bytesRead;
@@ -136,7 +131,6 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject, js
         ERR_print_errors_fp(stderr);
         SSL_free(ssl);
         SSL_CTX_free(ctx);
-        cleanupSSL();
         close(sockfd);
         env->ReleaseStringUTFChars(url, cUrl);
         env->ReleaseStringUTFChars(outputFile, cOutputFile);
@@ -148,7 +142,6 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject, js
         std::cerr << "Failed to open file: " << cOutputFile << std::endl;
         SSL_free(ssl);
         SSL_CTX_free(ctx);
-        cleanupSSL();
         close(sockfd);
         env->ReleaseStringUTFChars(url, cUrl);
         env->ReleaseStringUTFChars(outputFile, cOutputFile);
@@ -163,7 +156,6 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject, js
 
     SSL_free(ssl);
     SSL_CTX_free(ctx);
-    cleanupSSL();
     close(sockfd);
     file.close();
 
