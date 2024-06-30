@@ -32,10 +32,10 @@ android {
                     "-DBUILD_OPENSSL=ON",
                     "-DOPENSSL_BUILD_VERSION=3.1.5",
                     "-DCROSS_ANDROID=ON",
-                    "-DANDROID_NDK_ROOT=/usr/local/lib/android/sdk/ndk/26.1.10909125",
-                    "-DANDROID_ARCH=arch-arm64",
-                    "-DANDROID_API=26",
-                    "-DANDROID_MACHINE=aarch64"
+                    "-DANDROID_NDK=/usr/local/lib/android/sdk/ndk/26.1.10909125",
+                    "-DCMAKE_TOOLCHAIN_FILE=/usr/local/lib/android/sdk/ndk/26.1.10909125/build/cmake/android.toolchain.cmake",
+                    "-DANDROID_NATIVE_API_LEVEL=26",
+                    "-DANDROID_ABI=aarch64"
                 )
             }
         }
