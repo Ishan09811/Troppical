@@ -14,3 +14,10 @@
 
 # Keep all classes in the specified package and its subpackages
 -keep class io.github.troppical.** {*;}
+
+-keep class io.github.troppical.network.APKDownloader$OnCompleteCallback {
+        fun onComplete(success: Boolean)
+      }
+-keep class io.github.troppical.network.APKDownloader$ProgressCallback {
+        fun onProgress(progress: Int)
+      }
