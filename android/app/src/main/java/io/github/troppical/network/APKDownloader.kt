@@ -6,7 +6,7 @@ class APKDownloader(private val url: String, private val outputFile: String) {
         System.loadLibrary("apkdownloader")
     }
 
-    external fun download(url, outputFile, progressCallback: ProgressCallback, onCompleteCallback: OnCompleteCallback): Boolean
+    external fun download(progressCallback: ProgressCallback, onCompleteCallback: OnCompleteCallback): Boolean
 
     interface ProgressCallback {
         fun onProgress(progress: Int)
