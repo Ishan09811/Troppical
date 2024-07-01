@@ -72,7 +72,7 @@ void downloadFile(SSL* ssl, const std::string& path, std::ofstream& file, Progre
 
         JNIEnv* env = callbackInfo->env;
         jobject progressCallback = callbackInfo->progressCallback;
-        jclass callbackClass = env->GetObjectClass(progressCallback);
+        jclass callbackClass = env->FindClass("io/github/troppical/network/APKDownloader$OnCompleteCallback");
         jmethodID onProgressMethod = env->GetMethodID(callbackClass, "onProgress", "(I)V");
 
         if (onProgressMethod) {
@@ -165,7 +165,7 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject thi
     close(sockfd);
     file.close();
 
-    jclass callbackClass = env->GetObjectClass(onCompleteCallback);
+    jclass callbackClass = env->FindClass("io/github/troppical/network/APKDownloader$OnCompleteCallback");
     jmethodID onCompleteMethod = env->GetMethodID(callbackClass, "onComplete", "(Z)V");
     env->CallVoidMethod(onCompleteCallback, onCompleteMethod, JNI_TRUE);
 
