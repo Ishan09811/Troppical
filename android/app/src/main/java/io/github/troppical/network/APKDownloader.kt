@@ -1,6 +1,6 @@
 package io.github.troppical.network
 
-class APKDownloader(private val url: String, private val outputFile: String) {
+class APKDownloader(val url: String, val outputFile: String) {
 
     init {
         System.loadLibrary("apkdownloader")
