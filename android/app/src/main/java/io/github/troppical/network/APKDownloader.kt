@@ -1,12 +1,12 @@
 package io.github.troppical.network
 
-class APKDownloader(val url: String, val outputFile: String) {
+class APKDownloader(private val url: String, private val outputFile: String) {
 
     init {
         System.loadLibrary("apkdownloader")
     }
 
-    external fun download(progressCallback: ProgressCallback, onCompleteCallback: OnCompleteCallback): Boolean
+    external fun download(url, outputFile, progressCallback: ProgressCallback, onCompleteCallback: OnCompleteCallback): Boolean
 
     interface ProgressCallback {
         fun onProgress(progress: Int)
