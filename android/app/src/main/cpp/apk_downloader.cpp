@@ -10,6 +10,9 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
+std::string storedUrl;
+std::string storedOutputFile;
+
 extern "C" {
 
 struct ProgressCallbackInfo {
@@ -47,7 +50,6 @@ int createSocket(const std::string& host, int port) {
 }
 
 SSL_CTX* createSSLContext() {
-    // Initialize OpenSSL
     OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL);
 
     const SSL_METHOD* method = TLS_client_method();
@@ -74,21 +76,32 @@ void downloadFile(SSL* ssl, const std::string& path, std::ofstream& file, Progre
         jmethodID onProgressMethod = env->GetMethodID(callbackClass, "onProgress", "(I)V");
 
         if (onProgressMethod) {
-            int progress = static_cast<int>((totalBytesRead / 1000000) * 100);  // Simplified progress calculation
+            int progress = static_cast<int>((totalBytesRead / 1000000) * 100);
             env->CallVoidMethod(progressCallback, onProgressMethod, progress);
         }
     }
 }
 
-JNIEXPORT jboolean JNICALL
-Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject thiz, jstring url, jstring outputFile, jobject progressCallback, jobject onCompleteCallback) {
-
+JNIEXPORT void JNICALL
+Java_io_github_troppical_network_APKDownloader_setUrl(JNIEnv* env, jobject thiz, jstring url) {
     const char* cUrl = env->GetStringUTFChars(url, nullptr);
-    const char* cOutputFile = env->GetStringUTFChars(outputFile, nullptr);
+    storedUrl = std::string(cUrl);
+    env->ReleaseStringUTFChars(url, cUrl);
+}
 
-    std::string urlStr(cUrl);
+JNIEXPORT void JNICALL
+Java_io_github_troppical_network_APKDownloader_setOutputFile(JNIEnv* env, jobject thiz, jstring outputFile) {
+    const char* cOutputFile = env->GetStringUTFChars(outputFile, nullptr);
+    storedOutputFile = std::string(cOutputFile);
+    env->ReleaseStringUTFChars(outputFile, cOutputFile);
+}
+
+JNIEXPORT jboolean JNICALL
+Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject thiz, jobject progressCallback, jobject onCompleteCallback) {
+    std::string urlStr = storedUrl;
+    std::string outputFileStr = storedOutputFile;
     std::string protocol, host, path;
-    int port = 443;  // Default to HTTPS
+    int port = 443;
 
     size_t pos = urlStr.find("://");
     if (pos != std::string::npos) {
@@ -113,16 +126,12 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject thi
 
     int sockfd = createSocket(host, port);
     if (sockfd < 0) {
-        env->ReleaseStringUTFChars(url, cUrl);
-        env->ReleaseStringUTFChars(outputFile, cOutputFile);
         return JNI_FALSE;
     }
 
     SSL_CTX* ctx = createSSLContext();
     if (!ctx) {
         close(sockfd);
-        env->ReleaseStringUTFChars(url, cUrl);
-        env->ReleaseStringUTFChars(outputFile, cOutputFile);
         return JNI_FALSE;
     }
 
@@ -133,19 +142,15 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject thi
         SSL_free(ssl);
         SSL_CTX_free(ctx);
         close(sockfd);
-        env->ReleaseStringUTFChars(url, cUrl);
-        env->ReleaseStringUTFChars(outputFile, cOutputFile);
         return JNI_FALSE;
     }
 
-    std::ofstream file(cOutputFile, std::ios::binary);
+    std::ofstream file(outputFileStr, std::ios::binary);
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << cOutputFile << std::endl;
+        std::cerr << "Failed to open file: " << outputFileStr << std::endl;
         SSL_free(ssl);
         SSL_CTX_free(ctx);
         close(sockfd);
-        env->ReleaseStringUTFChars(url, cUrl);
-        env->ReleaseStringUTFChars(outputFile, cOutputFile);
         return JNI_FALSE;
     }
 
@@ -159,9 +164,6 @@ Java_io_github_troppical_network_APKDownloader_download(JNIEnv* env, jobject thi
     SSL_CTX_free(ctx);
     close(sockfd);
     file.close();
-
-    env->ReleaseStringUTFChars(url, cUrl);
-    env->ReleaseStringUTFChars(outputFile, cOutputFile);
 
     jclass callbackClass = env->GetObjectClass(onCompleteCallback);
     jmethodID onCompleteMethod = env->GetMethodID(callbackClass, "onComplete", "(Z)V");
